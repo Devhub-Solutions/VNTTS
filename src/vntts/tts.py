@@ -1,4 +1,4 @@
-"""Text-to-Speech module using local Piper ONNX models."""
+"""Text-to-Speech module using Piper ONNX models downloaded from GitHub Releases."""
 
 from __future__ import annotations
 
@@ -10,11 +10,14 @@ from piper import PiperVoice
 from piper.config import SynthesisConfig
 
 from vntts.model_downloader import download_and_prepare_models
-from vntts.model_parts import merge_parts_to_file, resolve_model_dir
+from vntts.model_parts import merge_parts_to_file
 
 
 class TTS:
-    """Text-to-Speech wrapper around local Piper ONNX models.
+    """Text-to-Speech wrapper around Piper ONNX models.
+
+    When *model_dir* is ``None``, models are automatically downloaded from
+    GitHub Releases on first use.
 
     Parameters
     ----------
@@ -22,6 +25,7 @@ class TTS:
         Language folder (default: ``"vi"``).
     model_dir : str | Path | None
         Directory containing `.onnx` and `.onnx.json` model pairs.
+        If ``None``, models are downloaded automatically.
     model_name : str | None
         Optional model base name to select from `model_dir`.
     use_cuda : bool
@@ -49,7 +53,11 @@ class TTS:
                 if lang_dir.is_dir():
                     self.model_dir = lang_dir
                 else:
-                    self.model_dir = resolve_model_dir(None, default_subdir="banmai")
+                    raise FileNotFoundError(
+                        f"TTS model directory not found. Expected "
+                        f"'{preferred_dir}' or '{lang_dir}' after download. "
+                        f"Verify the models zip at the configured URL."
+                    )
 
         self.model_name = model_name
         self.use_cuda = use_cuda

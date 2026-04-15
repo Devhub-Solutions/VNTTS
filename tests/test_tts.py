@@ -11,14 +11,18 @@ from vntts.tts import TTS
 
 class TestTTSInit:
     @patch("vntts.tts.download_and_prepare_models")
-    def test_default_language(self, mock_download):
-        mock_download.return_value = Path(__file__).resolve().parent.parent / "src" / "vntts" / "models"
+    def test_default_language(self, mock_download, tmp_path):
+        models_root = tmp_path / "models"
+        (models_root / "banmai").mkdir(parents=True)
+        mock_download.return_value = models_root
         tts = TTS()
         assert tts.lang == "vi"
 
     @patch("vntts.tts.download_and_prepare_models")
-    def test_custom_language(self, mock_download):
-        mock_download.return_value = Path(__file__).resolve().parent.parent / "src" / "vntts" / "models"
+    def test_custom_language(self, mock_download, tmp_path):
+        models_root = tmp_path / "models"
+        (models_root / "banmai").mkdir(parents=True)
+        mock_download.return_value = models_root
         tts = TTS(lang="en")
         assert tts.lang == "en"
 
