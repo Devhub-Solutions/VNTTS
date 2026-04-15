@@ -34,7 +34,7 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest tests/ -v --cov=src/vntts --cov-report=term-only
+          pytest tests/ -v --cov=src/vntts --cov-report=term-missing
 
       - name: Build distribution
         run: |

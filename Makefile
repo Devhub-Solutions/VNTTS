@@ -28,7 +28,7 @@ install:
 	pip install build twine black isort pyright
 
 test:
-	pytest tests/ -v --cov=src/vntts --cov-report=term-only
+	pytest tests/ -v --cov=src/vntts --cov-report=term-missing
 
 test-fast:
 	pytest tests/ -v --no-cov
