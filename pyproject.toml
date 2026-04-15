@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vntts"
+version = "0.1.0"
+description = "Vietnamese Text-to-Speech and Speech-to-Text library"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10,<3.13"
+authors = [
+    {name = "Devhub Solutions"},
+]
+keywords = ["tts", "stt", "text-to-speech", "speech-to-text", "vietnamese"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Multimedia :: Sound/Audio :: Speech",
+]
+dependencies = [
+    "gTTS>=2.5.0",
+    "SpeechRecognition>=3.10.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Devhub-Solutions/VNTTS"
+Repository = "https://github.com/Devhub-Solutions/VNTTS"
+Issues = "https://github.com/Devhub-Solutions/VNTTS/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
