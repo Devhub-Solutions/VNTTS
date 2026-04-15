@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 
-DEFAULT_CHUNK_SIZE_MB = 900
+CHUNK_SIZE_BYTES = 80 * 1024 * 1024
+DEFAULT_CHUNK_SIZE_MB = CHUNK_SIZE_BYTES // (1024 * 1024)
 
 
 def _part_sort_key(path: Path) -> tuple[int, str]:
@@ -39,6 +41,7 @@ def merge_parts_to_file(
     target_file: str | Path,
     *,
     overwrite: bool = False,
+    expected_sha256: str | None = None,
 ) -> Path | None:
     """Merge split model parts into *target_file* if possible.
 
@@ -58,6 +61,15 @@ def merge_parts_to_file(
             with part.open("rb") as src:
                 for chunk in iter(lambda: src.read(1024 * 1024), b""):
                     merged.write(chunk)
+
+    if expected_sha256 is not None:
+        actual_sha256 = compute_sha256(target)
+        if actual_sha256 != expected_sha256.lower():
+            target.unlink(missing_ok=True)
+            raise ValueError(
+                f"Checksum mismatch for {target}: "
+                f"expected {expected_sha256}, got {actual_sha256}"
+            )
     return target
 
 
@@ -109,7 +121,7 @@ def split_file(
             data = src.read(chunk_size)
             if not data:
                 break
-            part_path = out_dir / f"{prefix}.part{index}"
+            part_path = out_dir / f"{prefix}.part{index:03d}"
             part_path.write_bytes(data)
             created.append(part_path)
             index += 1
@@ -117,3 +129,13 @@ def split_file(
     if not created:
         raise RuntimeError(f"No part created from source file: {source}")
     return created
+
+
+def compute_sha256(file_path: str | Path) -> str:
+    """Return SHA256 hash for *file_path*."""
+    path = Path(file_path)
+    hasher = hashlib.sha256()
+    with path.open("rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            hasher.update(chunk)
+    return hasher.hexdigest()
