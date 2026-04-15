@@ -9,7 +9,7 @@ from typing import Union
 from piper import PiperVoice
 from piper.config import SynthesisConfig
 
-from vntts.model_parts import merge_parts_to_file
+from vntts.model_parts import merge_parts_to_file, resolve_model_dir
 
 
 class TTS:
@@ -35,7 +35,24 @@ class TTS:
         use_cuda: bool = False,
     ) -> None:
         self.lang = lang
-        self.model_dir = Path(model_dir or f"models/tts-model/{lang}")
+        # Resolve model directory with smart fallbacks
+        if model_dir is not None:
+            # User provided explicit path
+            self.model_dir = Path(model_dir)
+        else:
+            # Try to find models directory
+            # First try "banmai" (the included model), then fall back to language folder
+            try:
+                self.model_dir = resolve_model_dir(None, default_subdir="banmai")
+            except FileNotFoundError:
+                # Fall back to language-based directory
+                lang_dir = f"tts-model/{lang}"
+                try:
+                    self.model_dir = resolve_model_dir(None, default_subdir=lang_dir)
+                except FileNotFoundError:
+                    # Last resort: use the old relative path (may not exist)
+                    self.model_dir = Path(f"models/{lang_dir}")
+
         self.model_name = model_name
         self.use_cuda = use_cuda
         self._voice: PiperVoice | None = None

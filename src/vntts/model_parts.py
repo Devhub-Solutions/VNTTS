@@ -139,3 +139,68 @@ def compute_sha256(file_path: str | Path) -> str:
         for chunk in iter(lambda: f.read(1024 * 1024), b""):
             hasher.update(chunk)
     return hasher.hexdigest()
+
+
+def resolve_model_dir(
+    model_dir: str | Path | None = None,
+    default_subdir: str = "banmai",
+) -> Path:
+    """Resolve model directory path, checking multiple locations.
+
+    Searches in order:
+    1. User-provided path (if exists)
+    2. Package installation directory (`vntts/models/<default_subdir>`)
+    3. Relative path from current working directory (`models/<default_subdir>`)
+    4. Raises error if not found
+
+    Parameters
+    ----------
+    model_dir : str | Path | None
+        Explicit model directory path. If None, uses default search.
+    default_subdir : str
+        Default subdirectory name (e.g., "banmai" or "asr/sherpa-onnx-...")
+
+    Returns
+    -------
+    Path
+        Resolved model directory path
+
+    Raises
+    ------
+    FileNotFoundError
+        If model directory not found in any location
+    """
+    # If user provided explicit path, use it
+    if model_dir is not None:
+        path = Path(model_dir)
+        if path.is_dir():
+            return path
+        # User provided invalid path - error out
+        raise FileNotFoundError(f"Model directory not found: {path}")
+
+    # Try Package Installation Directory
+    # Models are installed alongside the vntts package
+    package_dir = Path(__file__).parent.parent / "models" / default_subdir
+    if package_dir.is_dir():
+        return package_dir
+
+    # Try Current Working Directory (development)
+    cwd_dir = Path.cwd() / "models" / default_subdir
+    if cwd_dir.is_dir():
+        return cwd_dir
+
+    # Try relative to parent of package (for editable installs)
+    proj_dir = Path(__file__).parent.parent.parent / "models" / default_subdir
+    if proj_dir.is_dir():
+        return proj_dir
+
+    # Not found anywhere
+    raise FileNotFoundError(
+        f"Model directory not found for '{default_subdir}'.\n"
+        f"Searched:\n"
+        f"  1. {package_dir}\n"
+        f"  2. {cwd_dir}\n"
+        f"  3. {proj_dir}\n"
+        f"Please provide explicit path via model_dir parameter or ensure "
+        f"models are in the package directory."
+    )
