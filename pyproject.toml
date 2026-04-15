@@ -5,23 +5,30 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "vntts"
 version = "0.1.0"
-description = "Vietnamese Text-to-Speech and Speech-to-Text library"
+description = "Vietnamese Text-to-Speech and Speech-to-Text library with embedded models"
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.10,<3.13"
 authors = [
-    {name = "Devhub Solutions"},
+    {name = "Devhub Solutions", email = "dev@devhub-solutions.com"},
 ]
-keywords = ["tts", "stt", "text-to-speech", "speech-to-text", "vietnamese"]
+maintainers = [
+    {name = "Devhub Solutions", email = "dev@devhub-solutions.com"},
+]
+keywords = ["tts", "stt", "text-to-speech", "speech-to-text", "vietnamese", "onnx", "piper", "sherpa"]
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Multimedia :: Sound/Audio :: Speech",
+    "Topic :: Multimedia :: Sound/Audio :: Speech Synthesis",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
 ]
 dependencies = [
     "sherpa-onnx>=1.12.38",
