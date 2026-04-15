@@ -31,7 +31,7 @@ audio_bytes = tts.speak_to_bytes("Xin chào")
 from vntts import STT
 
 stt = STT(
-    model_dir="models/asr/sherpa-onnx-zipformer-vi-30M-2026-02-09"
+    model_dir="models/asr/sherpa-onnx-zipformer-vi-2025-04-20"
 )
 text = stt.recognize_from_file("audio.wav")
 print(text)
@@ -40,10 +40,11 @@ print(text)
 ## Model setup
 
 - STT: clone model to `models/asr/`:
-  - `git clone https://huggingface.co/csukuangfj2/sherpa-onnx-zipformer-vi-30M-2026-02-09 models/asr/sherpa-onnx-zipformer-vi-30M-2026-02-09`
+  - `git clone https://huggingface.co/csukuangfj/sherpa-onnx-zipformer-vi-2025-04-20 models/asr/sherpa-onnx-zipformer-vi-2025-04-20`
 - TTS: place model pairs in `models/tts-model/{lang}/`:
   - `{model}.onnx`
   - `{model}.onnx.json`
+  - Giọng Ban Mai (NghiTTS): [Tải tại đây](https://drive.google.com/drive/folders/1f_pCpvgqfvO4fdNKM7WS4zTuXC0HBskL)
 
 ## Development
 

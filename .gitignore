@@ -29,3 +29,11 @@ htmlcov/
 # OS
 .DS_Store
 Thumbs.db
+
+# Models
+models/
+*.onnx
+*.onnx.json
+*.wav
+*.txt
+*.model

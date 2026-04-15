@@ -74,6 +74,8 @@ class STT:
         if not tokens.is_file():
             raise FileNotFoundError(f"tokens.txt not found in {self.model_dir}")
 
+        # Try to find encoder, decoder, joiner with pattern matching
+        # Zipformer models often have 'encoder-epoch-X-avg-Y.onnx' format
         encoder = self._pick_model_file("encoder*.onnx", prefer_int8=True)
         decoder = self._pick_model_file("decoder*.onnx")
         joiner = self._pick_model_file("joiner*.onnx", prefer_int8=True)
