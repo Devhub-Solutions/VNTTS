@@ -1,4 +1,4 @@
 include README.md
 include LICENSE
-# Models are now included as package data in src/vntts/models/
-recursive-include src/vntts/models *
+# Models are downloaded at runtime from GitHub Releases.
+include src/vntts/models/README.md

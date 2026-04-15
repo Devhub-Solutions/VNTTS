@@ -33,8 +33,8 @@ Thumbs.db
 # Runtime artifacts
 *.wav
 
-# Ignore merged binaries; keep split parts in git
-models/**/*.onnx
-
-# Keep model metadata and chunks tracked
-
+# Models are downloaded at runtime from GitHub Releases.
+# Do not commit model binaries to the repository.
+models/
+src/vntts/models/banmai/
+src/vntts/models/asr/

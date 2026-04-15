@@ -53,11 +53,7 @@ where = ["src"]
 
 [tool.setuptools.package-data]
 vntts = [
-    "models/**/*.onnx",
-    "models/**/*.txt", 
-    "models/**/*.json",
-    "models/**/*.part*",
-    "models/**/*.model",
+    "models/README.md",
 ]
 
 [tool.pytest.ini_options]

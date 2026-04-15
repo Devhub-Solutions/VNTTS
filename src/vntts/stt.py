@@ -1,4 +1,4 @@
-"""Speech-to-Text module using sherpa-onnx."""
+"""Speech-to-Text module using sherpa-onnx models downloaded from GitHub Releases."""
 
 from __future__ import annotations
 
@@ -10,18 +10,22 @@ import numpy as np
 import sherpa_onnx
 
 from vntts.model_downloader import download_and_prepare_models
-from vntts.model_parts import merge_all_parts_in_dir, resolve_model_dir
+from vntts.model_parts import merge_all_parts_in_dir
 
 
 class STT:
     """Speech-to-Text wrapper around sherpa-onnx offline recognizer.
+
+    When *model_dir* is ``None``, models are automatically downloaded from
+    GitHub Releases on first use.
 
     Parameters
     ----------
     lang : str
         Language code for API compatibility.
     model_dir : str | Path | None
-        Path to the cloned sherpa-onnx model directory.
+        Path to the sherpa-onnx model directory.
+        If ``None``, models are downloaded automatically.
     provider : str
         ONNX execution provider (default: ``"cpu"``).
     num_threads : int
@@ -44,9 +48,10 @@ class STT:
             if asr_dir.is_dir():
                 self.model_dir = asr_dir
             else:
-                self.model_dir = resolve_model_dir(
-                    None,
-                    default_subdir="asr/sherpa-onnx-zipformer-vi-2025-04-20",
+                raise FileNotFoundError(
+                    f"STT model directory not found. Expected "
+                    f"'{asr_dir}' after download. "
+                    f"Verify the models zip at the configured URL."
                 )
         self.provider = provider
         self.num_threads = num_threads
