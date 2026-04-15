@@ -27,6 +27,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Overwrite existing output when merging a single file",
     )
+    parser.add_argument(
+        "--verify-checksum",
+        action="store_true",
+        help="Verify SHA256 from <target>.sha256 after merge",
+    )
     return parser.parse_args()
 
 
@@ -42,7 +47,18 @@ def main() -> None:
             print(p)
         return
 
-    merged = merge_parts_to_file(args.target, overwrite=args.overwrite)
+    expected_sha256 = None
+    if args.verify_checksum:
+        checksum_file = Path(f"{args.target}.sha256")
+        if not checksum_file.is_file():
+            raise FileNotFoundError(f"Checksum file not found: {checksum_file}")
+        expected_sha256 = checksum_file.read_text(encoding="utf-8").strip().split()[0]
+
+    merged = merge_parts_to_file(
+        args.target,
+        overwrite=args.overwrite,
+        expected_sha256=expected_sha256,
+    )
     if merged is None:
         print(f"No merge performed for {args.target}")
     else:

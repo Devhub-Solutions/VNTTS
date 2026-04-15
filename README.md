@@ -11,15 +11,15 @@ Dự án tích hợp **Vietnamese Text-to-Speech (TTS)** và **Speech-to-Text (S
 VNTTS/
   models/
     banmai/
-      banmai.part1
-      banmai.part2
+      banmai.part001
+      banmai.part002
       ...
       banmai.onnx.json
     asr/
       sherpa-onnx-zipformer-vi-2025-04-20/
-        encoder.int8.part1
-        decoder.part1
-        joiner.int8.part1
+        encoder.int8.part001
+        decoder.part001
+        joiner.int8.part001
         tokens.txt
         ...
   scripts/
@@ -45,22 +45,22 @@ pip install -e ".[dev]"
 
 ## Quản lý model lớn (không dùng Git LFS)
 
-### 1) Tách model (<= 900MB mỗi part)
+### 1) Tách model (<= 80MB mỗi part)
 
 ```bash
-python scripts/split_model.py models/banmai/banmai.onnx --chunk-size-mb 900
+python scripts/split_model.py models/banmai/banmai.onnx --chunk-size-mb 80 --write-checksum
 ```
 
 Mặc định script tạo theo chuẩn:
 
-- `banmai.part1`
-- `banmai.part2`
+- `banmai.part001`
+- `banmai.part002`
 - ...
 
 ### 2) Ghép model thủ công (nếu muốn)
 
 ```bash
-python scripts/merge_model.py models/banmai/banmai.onnx
+python scripts/merge_model.py models/banmai/banmai.onnx --verify-checksum
 # hoặc merge toàn bộ trong 1 thư mục
 python scripts/merge_model.py models/asr/sherpa-onnx-zipformer-vi-2025-04-20
 ```
@@ -75,8 +75,8 @@ Khi gọi `TTS` hoặc `STT`, hệ thống tự động:
 
 Hỗ trợ cả 2 kiểu đặt tên part:
 
-- `banmai.part1` -> `banmai.onnx`
-- `banmai.onnx.part1` -> `banmai.onnx`
+- `banmai.part001` (hoặc `banmai.part1`) -> `banmai.onnx`
+- `banmai.onnx.part001` (hoặc `banmai.onnx.part1`) -> `banmai.onnx`
 
 ## Chuẩn bị model
 
@@ -103,6 +103,20 @@ Có thể clone trực tiếp:
 ```bash
 git clone https://huggingface.co/csukuangfj/sherpa-onnx-zipformer-vi-2025-04-20 \
   models/asr/sherpa-onnx-zipformer-vi-2025-04-20
+```
+
+## Tải model banmai (ví dụ)
+
+Tải 2 file cần thiết vào `models/banmai/`:
+
+- `banmai.onnx`
+- `banmai.onnx.json`
+
+Sau đó split:
+
+```bash
+python scripts/split_model.py models/banmai/banmai.onnx --chunk-size-mb 80 --write-checksum
+rm models/banmai/banmai.onnx
 ```
 
 ## Test pipeline TTS -> STT
