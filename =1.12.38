@@ -1,0 +1,2 @@
+Requirement already satisfied: sherpa-onnx in /home/codespace/.python/current/lib/python3.12/site-packages (1.12.38)
+Requirement already satisfied: sherpa-onnx-core==1.12.38 in /home/codespace/.python/current/lib/python3.12/site-packages (from sherpa-onnx) (1.12.38)

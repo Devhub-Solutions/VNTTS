@@ -1,0 +1,9 @@
+# Model files - keep in regular git to avoid LFS dependency
+*.onnx filter=lfs diff=lfs merge=lfs -text
+*.part* binary
+*.onnx.sha256 text
+*.json text eol=lf
+
+# Audio test files
+*.wav binary
+*.mp3 binary
