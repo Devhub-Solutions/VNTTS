@@ -25,7 +25,9 @@ class TestSTTInit:
 class TestSTTRecognizeFromFile:
     def test_file_not_found(self):
         stt = STT()
-        with pytest.raises(FileNotFoundError, match="Audio file not found"):
+        with pytest.raises(
+            FileNotFoundError, match=r"Audio file not found: /nonexistent/audio\.wav"
+        ):
             stt.recognize_from_file("/nonexistent/audio.wav")
 
     @patch("vntts.stt.sr.AudioFile")
