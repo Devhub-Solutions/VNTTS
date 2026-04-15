@@ -15,10 +15,13 @@ pip install vntts
 ```python
 from vntts import TTS
 
-tts = TTS()  # default language: Vietnamese
-tts.speak("Xin chào", "output.mp3")
+tts = TTS(
+    model_dir="models/tts-model/vi",  # contains {model}.onnx + {model}.onnx.json
+    model_name="calmwoman3688",       # optional, auto-picks first valid pair if omitted
+)
+tts.speak("Xin chào", "output.wav")
 
-# Get raw audio bytes
+# Get raw WAV bytes
 audio_bytes = tts.speak_to_bytes("Xin chào")
 ```
 
@@ -27,10 +30,20 @@ audio_bytes = tts.speak_to_bytes("Xin chào")
 ```python
 from vntts import STT
 
-stt = STT()  # default language: vi-VN
+stt = STT(
+    model_dir="models/asr/sherpa-onnx-zipformer-vi-30M-2026-02-09"
+)
 text = stt.recognize_from_file("audio.wav")
 print(text)
 ```
+
+## Model setup
+
+- STT: clone model to `models/asr/`:
+  - `git clone https://huggingface.co/csukuangfj2/sherpa-onnx-zipformer-vi-30M-2026-02-09 models/asr/sherpa-onnx-zipformer-vi-30M-2026-02-09`
+- TTS: place model pairs in `models/tts-model/{lang}/`:
+  - `{model}.onnx`
+  - `{model}.onnx.json`
 
 ## Development
 

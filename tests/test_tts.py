@@ -3,6 +3,8 @@
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 from vntts.tts import TTS
 
 
@@ -17,49 +19,59 @@ class TestTTSInit:
 
 
 class TestTTSSpeak:
-    @patch("vntts.tts.gTTS")
-    def test_speak_saves_file(self, mock_gtts_cls, tmp_path):
-        mock_instance = MagicMock()
-        mock_gtts_cls.return_value = mock_instance
+    def test_missing_model_pair(self, tmp_path):
+        tts = TTS(model_dir=tmp_path)
+        with pytest.raises(FileNotFoundError, match="No valid model pair found"):
+            tts.speak("xin chào", tmp_path / "out.wav")
 
-        tts = TTS()
-        output = tmp_path / "output.mp3"
+    @patch("vntts.tts.PiperVoice.load")
+    def test_speak_saves_file(self, mock_load, tmp_path):
+        (tmp_path / "demo.onnx").write_bytes(b"x")
+        (tmp_path / "demo.onnx.json").write_text("{}")
+
+        mock_voice = MagicMock()
+        mock_load.return_value = mock_voice
+
+        tts = TTS(model_dir=tmp_path, model_name="demo")
+        output = tmp_path / "output.wav"
         result = tts.speak("xin chào", output)
 
-        mock_gtts_cls.assert_called_once_with(text="xin chào", lang="vi", slow=False)
-        mock_instance.save.assert_called_once_with(str(output))
         assert result == output
+        assert output.exists()
+        mock_load.assert_called_once()
+        mock_voice.synthesize_wav.assert_called_once()
 
-    @patch("vntts.tts.gTTS")
-    def test_speak_slow(self, mock_gtts_cls, tmp_path):
-        mock_instance = MagicMock()
-        mock_gtts_cls.return_value = mock_instance
+    @patch("vntts.tts.PiperVoice.load")
+    def test_speak_returns_path_object(self, mock_load, tmp_path):
+        (tmp_path / "demo.onnx").write_bytes(b"x")
+        (tmp_path / "demo.onnx.json").write_text("{}")
+        mock_load.return_value = MagicMock()
 
-        tts = TTS()
-        output = tmp_path / "output.mp3"
-        tts.speak("xin chào", output, slow=True)
-
-        mock_gtts_cls.assert_called_once_with(text="xin chào", lang="vi", slow=True)
-
-    @patch("vntts.tts.gTTS")
-    def test_speak_returns_path_object(self, mock_gtts_cls, tmp_path):
-        mock_gtts_cls.return_value = MagicMock()
-
-        tts = TTS()
-        result = tts.speak("hello", str(tmp_path / "out.mp3"))
+        tts = TTS(model_dir=tmp_path, model_name="demo")
+        result = tts.speak("hello", str(tmp_path / "out.wav"))
         assert isinstance(result, Path)
 
 
 class TestTTSSpeakToBytes:
-    @patch("vntts.tts.gTTS")
-    def test_speak_to_bytes_returns_bytes(self, mock_gtts_cls):
-        mock_instance = MagicMock()
-        mock_instance.write_to_fp.side_effect = lambda fp: fp.write(b"fake-audio")
-        mock_gtts_cls.return_value = mock_instance
+    @patch("vntts.tts.PiperVoice.load")
+    def test_speak_to_bytes_returns_bytes(self, mock_load, tmp_path):
+        (tmp_path / "demo.onnx").write_bytes(b"x")
+        (tmp_path / "demo.onnx.json").write_text("{}")
 
-        tts = TTS()
+        mock_voice = MagicMock()
+
+        def _write_audio(text, wav_file, syn_config):
+            _ = text, syn_config
+            wav_file.setnchannels(1)
+            wav_file.setsampwidth(2)
+            wav_file.setframerate(16000)
+            wav_file.writeframes(b"\x00\x00" * 10)
+
+        mock_voice.synthesize_wav.side_effect = _write_audio
+        mock_load.return_value = mock_voice
+
+        tts = TTS(model_dir=tmp_path, model_name="demo")
         result = tts.speak_to_bytes("xin chào")
 
         assert isinstance(result, bytes)
-        assert result == b"fake-audio"
-        mock_gtts_cls.assert_called_once_with(text="xin chào", lang="vi", slow=False)
+        assert result.startswith(b"RIFF")
