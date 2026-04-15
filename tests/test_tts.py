@@ -8,12 +8,17 @@ import pytest
 from vntts.tts import TTS
 
 
+
 class TestTTSInit:
-    def test_default_language(self):
+    @patch("vntts.tts.download_and_prepare_models")
+    def test_default_language(self, mock_download):
+        mock_download.return_value = Path(__file__).resolve().parent.parent / "src" / "vntts" / "models"
         tts = TTS()
         assert tts.lang == "vi"
 
-    def test_custom_language(self):
+    @patch("vntts.tts.download_and_prepare_models")
+    def test_custom_language(self, mock_download):
+        mock_download.return_value = Path(__file__).resolve().parent.parent / "src" / "vntts" / "models"
         tts = TTS(lang="en")
         assert tts.lang == "en"
 
