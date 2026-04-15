@@ -71,6 +71,32 @@ class TestTTSSpeak:
         assert isinstance(result, Path)
 
 
+
+
+    @patch("vntts.tts.PiperVoice.load")
+    def test_auto_merge_parts_for_named_model(self, mock_load, tmp_path):
+        (tmp_path / "demo.part1").write_bytes(b"abc")
+        (tmp_path / "demo.part2").write_bytes(b"def")
+        (tmp_path / "demo.onnx.json").write_text("{}")
+
+        mock_voice = MagicMock()
+
+        def _write_audio(text, wav_file, syn_config):
+            _ = text, syn_config
+            wav_file.setnchannels(1)
+            wav_file.setsampwidth(2)
+            wav_file.setframerate(16000)
+            wav_file.writeframes(b"\x00\x00" * 10)
+
+        mock_voice.synthesize_wav.side_effect = _write_audio
+        mock_load.return_value = mock_voice
+
+        tts = TTS(model_dir=tmp_path, model_name="demo")
+        output = tmp_path / "output.wav"
+        tts.speak("xin chào", output)
+
+        assert (tmp_path / "demo.onnx").read_bytes() == b"abcdef"
+
 class TestTTSSpeakToBytes:
     @patch("vntts.tts.PiperVoice.load")
     def test_speak_to_bytes_returns_bytes(self, mock_load, tmp_path):
