@@ -183,10 +183,16 @@ def resolve_model_dir(
         )
 
     # Try Package Installation Directory
-    # Models are installed alongside the vntts package
+    # Models are included in the installed package directory
+    # Check both direct include and relative to package
     package_dir = Path(__file__).parent.parent / "models" / default_subdir
     if package_dir.is_dir():
         return package_dir
+    
+    # For installed packages: models might be in site-packages/models
+    package_site = Path(__file__).parent.parent.parent / "models" / default_subdir
+    if package_site.is_dir():
+        return package_site
 
     # Try Current Working Directory (development)
     cwd_dir = Path.cwd() / "models" / default_subdir
