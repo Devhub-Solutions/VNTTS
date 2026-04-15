@@ -37,6 +37,4 @@ Thumbs.db
 models/**/*.onnx
 
 # Keep model metadata and chunks tracked
-!models/**/*.onnx.json
-!models/**/*.part*
-!models/**/tokens.txt
+
