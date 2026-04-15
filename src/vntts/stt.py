@@ -9,6 +9,7 @@ import wave
 import numpy as np
 import sherpa_onnx
 
+from vntts.model_downloader import download_and_prepare_models
 from vntts.model_parts import merge_all_parts_in_dir, resolve_model_dir
 
 
@@ -35,11 +36,18 @@ class STT:
         num_threads: int = 1,
     ) -> None:
         self.lang = lang
-        # Resolve model directory with fallback to package installation
-        self.model_dir = resolve_model_dir(
-            model_dir,
-            default_subdir="asr/sherpa-onnx-zipformer-vi-2025-04-20"
-        )
+        if model_dir is not None:
+            self.model_dir = Path(model_dir)
+        else:
+            models_root = download_and_prepare_models()
+            asr_dir = models_root / "asr" / "sherpa-onnx-zipformer-vi-2025-04-20"
+            if asr_dir.is_dir():
+                self.model_dir = asr_dir
+            else:
+                self.model_dir = resolve_model_dir(
+                    None,
+                    default_subdir="asr/sherpa-onnx-zipformer-vi-2025-04-20",
+                )
         self.provider = provider
         self.num_threads = num_threads
         self._recognizer = None

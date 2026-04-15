@@ -5,6 +5,8 @@ import wave
 
 import pytest
 
+from pathlib import Path
+
 from vntts.stt import STT
 
 
@@ -17,17 +19,23 @@ def _create_test_wav(path):
 
 
 class TestSTTInit:
-    def test_default_language(self):
+    @patch("vntts.stt.download_and_prepare_models")
+    def test_default_language(self, mock_download):
+        mock_download.return_value = Path(__file__).resolve().parent.parent / "src" / "vntts" / "models"
         stt = STT()
         assert stt.lang == "vi-VN"
 
-    def test_custom_language(self):
+    @patch("vntts.stt.download_and_prepare_models")
+    def test_custom_language(self, mock_download):
+        mock_download.return_value = Path(__file__).resolve().parent.parent / "src" / "vntts" / "models"
         stt = STT(lang="en-US")
         assert stt.lang == "en-US"
 
 
 class TestSTTRecognizeFromFile:
-    def test_file_not_found(self):
+    @patch("vntts.stt.download_and_prepare_models")
+    def test_file_not_found(self, mock_download):
+        mock_download.return_value = Path(__file__).resolve().parent.parent / "src" / "vntts" / "models"
         stt = STT()
         with pytest.raises(
             FileNotFoundError, match=r"Audio file not found: /nonexistent/audio\.wav"
@@ -90,7 +98,9 @@ class TestSTTRecognizeFromFile:
         assert (tmp_path / "decoder.onnx").read_bytes() == b"dec"
         assert (tmp_path / "joiner.int8.onnx").read_bytes() == b"join"
 
-    def test_microphone_not_supported(self):
+    @patch("vntts.stt.download_and_prepare_models")
+    def test_microphone_not_supported(self, mock_download):
+        mock_download.return_value = Path(__file__).resolve().parent.parent / "src" / "vntts" / "models"
         stt = STT()
         with pytest.raises(NotImplementedError, match="Microphone recognition"):
             stt.recognize_from_microphone()
