@@ -170,13 +170,17 @@ def resolve_model_dir(
     FileNotFoundError
         If model directory not found in any location
     """
-    # If user provided explicit path, use it
+    # If user provided explicit path, validate it
     if model_dir is not None:
         path = Path(model_dir)
         if path.is_dir():
             return path
-        # User provided invalid path - error out
-        raise FileNotFoundError(f"Model directory not found: {path}")
+        # User provided invalid path - show all searched locations
+        raise FileNotFoundError(
+            f"Model directory not found: {path}\n"
+            f"Provided explicit path does not exist.\n"
+            f"Please verify the path is correct."
+        )
 
     # Try Package Installation Directory
     # Models are installed alongside the vntts package
