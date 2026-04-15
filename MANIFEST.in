@@ -1,7 +1,3 @@
 include README.md
 include LICENSE
-recursive-include models *.onnx *.txt *.json
-prune models/.git*
-global-exclude *.part*
-global-exclude .git*
-global-exclude .gitattributes
+# Models are now included as package data in src/vntts/models/

@@ -182,24 +182,19 @@ def resolve_model_dir(
             f"Please verify the path is correct."
         )
 
-    # Try Package Installation Directory
-    # Models are included in the installed package directory
-    # Check both direct include and relative to package
-    package_dir = Path(__file__).parent.parent / "models" / default_subdir
-    if package_dir.is_dir():
-        return package_dir
+    # Try Package Installation Directory (FIRST priority)
+    # When installed, models are at: site-packages/vntts/models
+    # In development: src/vntts/models
+    package_internal_dir = Path(__file__).parent / "models" / default_subdir
+    if package_internal_dir.is_dir():
+        return package_internal_dir
     
-    # For installed packages: models might be in site-packages/models
-    package_site = Path(__file__).parent.parent.parent / "models" / default_subdir
-    if package_site.is_dir():
-        return package_site
-
-    # Try Current Working Directory (development)
+    # Try Current Working Directory (development - legacy support)
     cwd_dir = Path.cwd() / "models" / default_subdir
     if cwd_dir.is_dir():
         return cwd_dir
 
-    # Try relative to parent of package (for editable installs)
+    # Try relative to parent of package (for editable installs - legacy)
     proj_dir = Path(__file__).parent.parent.parent / "models" / default_subdir
     if proj_dir.is_dir():
         return proj_dir
@@ -208,9 +203,9 @@ def resolve_model_dir(
     raise FileNotFoundError(
         f"Model directory not found for '{default_subdir}'.\n"
         f"Searched:\n"
-        f"  1. {package_dir}\n"
-        f"  2. {cwd_dir}\n"
-        f"  3. {proj_dir}\n"
+        f"  1. {package_internal_dir} (inside package)\n"
+        f"  2. {cwd_dir} (working directory)\n"
+        f"  3. {proj_dir} (project root)\n"
         f"Please provide explicit path via model_dir parameter or ensure "
         f"models are in the package directory."
     )
