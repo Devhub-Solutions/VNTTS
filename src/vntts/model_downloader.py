@@ -13,8 +13,7 @@ from urllib.request import Request, urlopen
 import zipfile
 
 DEFAULT_MODELS_URL: Final[str] = (
-    "https://github.com/Devhub-Solutions/VNTTS/releases/download/"
-    "untagged-8615407a8a6bd4bb7ace/models.zip"
+    "https://github.com/Devhub-Solutions/VNTTS/releases/download/models/models.zip"
 )
 DEFAULT_MODELS_ROOT: Final[str] = "models"
 DEFAULT_DOWNLOAD_TIMEOUT_SECONDS: Final[float] = 120.0
