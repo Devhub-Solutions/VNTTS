@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "vntts"
-version = "0.1.4"
+version = "0.1.5"
 description = "Vietnamese Text-to-Speech and Speech-to-Text library with embedded models"
 readme = "README.md"
 license = {text = "MIT"}
