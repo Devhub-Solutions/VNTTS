@@ -9,6 +9,8 @@ from typing import Union
 from piper import PiperVoice
 from piper.config import SynthesisConfig
 
+from vntts.model_parts import merge_parts_to_file
+
 
 class TTS:
     """Text-to-Speech wrapper around local Piper ONNX models.
@@ -43,12 +45,16 @@ class TTS:
         if self.model_name:
             model = self.model_name
             model_path = self.model_dir / f"{model}.onnx"
+            merge_parts_to_file(model_path)
             config_path = self.model_dir / f"{model}.onnx.json"
             if model_path.is_file() and config_path.is_file():
                 return model
             raise FileNotFoundError(
                 f"Model pair not found: {model_path} and {config_path}"
             )
+
+        for cfg in self.model_dir.glob("*.onnx.json"):
+            merge_parts_to_file(self.model_dir / cfg.name.removesuffix(".json"))
 
         candidates = sorted(p.stem for p in self.model_dir.glob("*.onnx"))
         for model in candidates:

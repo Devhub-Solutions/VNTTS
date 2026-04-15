@@ -30,10 +30,13 @@ htmlcov/
 .DS_Store
 Thumbs.db
 
-# Models
-models/
-*.onnx
-*.onnx.json
+# Runtime artifacts
 *.wav
-*.txt
-*.model
+
+# Ignore merged binaries; keep split parts in git
+models/**/*.onnx
+
+# Keep model metadata and chunks tracked
+!models/**/*.onnx.json
+!models/**/*.part*
+!models/**/tokens.txt

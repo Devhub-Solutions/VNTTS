@@ -9,6 +9,8 @@ import wave
 import numpy as np
 import sherpa_onnx
 
+from vntts.model_parts import merge_all_parts_in_dir
+
 
 class STT:
     """Speech-to-Text wrapper around sherpa-onnx offline recognizer.
@@ -35,7 +37,7 @@ class STT:
         self.lang = lang
         self.model_dir = Path(
             model_dir
-            or "models/asr/sherpa-onnx-zipformer-vi-30M-2026-02-09"
+            or "models/asr/sherpa-onnx-zipformer-vi-2025-04-20"
         )
         self.provider = provider
         self.num_threads = num_threads
@@ -69,6 +71,8 @@ class STT:
     def _get_recognizer(self):
         if self._recognizer is not None:
             return self._recognizer
+
+        merge_all_parts_in_dir(self.model_dir)
 
         tokens = self.model_dir / "tokens.txt"
         if not tokens.is_file():
